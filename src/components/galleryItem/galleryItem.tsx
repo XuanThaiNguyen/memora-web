@@ -1,0 +1,37 @@
+import { Link } from "react-router";
+import "./galleryItem.css";
+import Image from "../image/image";
+
+interface GalleryItemProps {
+  item: {
+    id: string | number;
+    media: string;
+    width: number;
+    height: number;
+  };
+}
+
+const GalleryItem = ({ item }: GalleryItemProps) => {
+  const optimizedHeight = (372 * item.height) / item.width;
+
+  return (
+    <div
+      className="galleryItem"
+      style={{ gridRowEnd: `span ${Math.ceil(item.height / 100)}` }}
+    >
+      <Image path={item.media} alt="" w={372} h={optimizedHeight} />
+      <Link to={`/pin/${item.id}`} className="overlay" />
+      <button className="saveButton">Save</button>
+      <div className="overlayIcons">
+        <button>
+          <Image path="memora/general/share.svg" alt="" />
+        </button>
+        <button>
+          <Image path="memora/general/more.svg" alt="" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default GalleryItem;
