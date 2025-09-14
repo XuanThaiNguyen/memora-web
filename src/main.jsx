@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router";
 import MainLayout from "./routes/layouts/mainLayout";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import Homepage from "./routes/homepage/homepage";
 import CreatePage from "./routes/createPage/createPage";
@@ -21,11 +21,11 @@ import AuthPage from "./routes/authPage/authPage";
 // const SearchPage = React.lazy(() => import("./routes/searchPage/searchPage"));
 // const AuthPage = React.lazy(() => import("./routes/authPage/authPage"));
 
-// const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    {/* <QueryClientProvider client={queryClient}> */}
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
           <Route element={<MainLayout />}>
@@ -38,6 +38,6 @@ createRoot(document.getElementById("root")).render(
           <Route path="/auth" element={<AuthPage />} />
         </Routes>
       </BrowserRouter>
-    {/* </QueryClientProvider> */}
+    </QueryClientProvider>
   </StrictMode>
 );

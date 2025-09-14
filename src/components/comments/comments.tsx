@@ -1,54 +1,34 @@
-import { useState } from "react";
-import Image from "../image/image";
 import "./comments.css";
-import EmojiPicker from "emoji-picker-react";
+import { useQuery } from "@tanstack/react-query";
+import apiRequest from "../../utils/apiRequest";
+import Comment from "./comment";
+import CommentForm from "./commentForm";
 
-const Comments = () => {
-  const [open, setOpen] = useState(false);
+interface CommentsProps {
+  id: string;
+}
+
+const Comments = ({ id }: CommentsProps) => {
+  const { isPending, error, data } = useQuery({
+    queryKey: ["comments", id],
+    queryFn: () => apiRequest.get(`/comments/${id}`).then((res) => res.data),
+  });
+
+  if (isPending) return "Loading...";
+
+  if (error) return "An error has occurred: " + error.message;
 
   return (
     <div className="comments">
       <div className="commentList">
-        <span className="commentCount">5 comments</span>
-        {/* COMMENTS */}
-        <div className="comment">
-          <Image path="/memora/general/noAvatar.png" alt="" />
-          <div className="commentContent">
-            <span className="commentUsername">Shen Long</span>
-            <p className="commentText">Loremm.....</p>
-            <span className="commentTime">1h</span>
-          </div>
-        </div>
-        {/* COMMENTS */}
-        <div className="comment">
-          <Image path="/memora/general/noAvatar.png" alt="" />
-          <div className="commentContent">
-            <span className="commentUsername">Shen Long</span>
-            <p className="commentText">Loremm.....</p>
-            <span className="commentTime">1h</span>
-          </div>
-        </div>
-        {/* COMMENTS */}
-        <div className="comment">
-          <Image path="/memora/general/noAvatar.png" alt="" />
-          <div className="commentContent">
-            <span className="commentUsername">Shen Long</span>
-            <p className="commentText">Loremm.....</p>
-            <span className="commentTime">1h</span>
-          </div>
-        </div>
+        <span className="commentCount">
+          {data.length === 0 ? "No comments" : `${data.length} comments`}
+        </span>
+        {data.map((comment) => (
+          <Comment key={comment._id} comment={comment} />
+        ))}
       </div>
-      <form className="commentForm">
-        <input type="text" placeholder="Add a comment" />
-        <div onClick={() => setOpen(true)} className="emoji">
-          😀
-        </div>
-        {open && (
-          <div className="emojiPicker">
-            <EmojiPicker />
-          </div>
-        )}
-      </form>
+      <CommentForm id={id} />
     </div>
   );
 };

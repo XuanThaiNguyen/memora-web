@@ -2,10 +2,27 @@ import { useState } from "react";
 import Image from "../../components/image/image";
 import "./profilePage.css";
 import Gallery from "../../components/gallery/gallery";
-import Collections from "../../components/collections/collections";
+import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import apiRequest from "../../utils/apiRequest";
+import Boards from "../../components/boards/boards";
+import FollowButton from "./followButton";
 
 const ProfilePage = () => {
   const [type, setType] = useState<"created" | "saved">("saved");
+
+  const { username } = useParams();
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["profile", username],
+    queryFn: () => apiRequest.get(`/users/${username}`).then((res) => res.data),
+  });
+
+  if (isPending) return "Loading...";
+
+  if (error) return "An error has occured: " + error.message;
+
+  if (!data) return "User not found!";
 
   return (
     <div className="profilePage">
@@ -13,17 +30,22 @@ const ProfilePage = () => {
         className="profileImg"
         w={100}
         h={100}
-        path="/memora/general/noAvatar.png"
+        path={data.img || "/memora/general/noAvatar.png"}
         alt=""
       />
-      <h1 className="profileName">Shen Long</h1>
-      <span className="profileUsername">@shenlong</span>
-      <div className="followCounts">10 followers - 20 followings</div>
+      <h1 className="profileName">{data.displayName}</h1>
+      <span className="profileUsername">@{data.username}</span>
+      <div className="followCounts">
+        {data.followerCount} followers - {data.followingCount} followings
+      </div>
       <div className="profileInteractions">
         <Image path="/memora/general/share.svg" alt="" />
         <div className="profileButtons">
           <button>Message</button>
-          <button>Follow</button>
+          <FollowButton
+            isFollowing={data.isFollowing}
+            username={data.username}
+          />
         </div>
         <Image path="/memora/general/more.svg" alt="" />
       </div>
@@ -41,7 +63,11 @@ const ProfilePage = () => {
           Saved
         </span>
       </div>
-      {type === "created" ? <Gallery /> : <Collections />}
+      {type === "created" ? (
+        <Gallery userId={data._id} />
+      ) : (
+        <Boards userId={data._id} />
+      )}
     </div>
   );
 };

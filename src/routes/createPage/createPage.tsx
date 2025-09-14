@@ -1,7 +1,19 @@
+import { useNavigate } from "react-router";
 import Image from "../../components/image/image";
+import useAuthStore from "../../utils/authStore";
 import "./createPage.css";
+import { useEffect } from "react";
 
 const CreatePage = () => {
+  const { currentUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/auth");
+    }
+  }, [currentUser, navigate]);
+
   return (
     <div className="createPage">
       <div className="createTop">

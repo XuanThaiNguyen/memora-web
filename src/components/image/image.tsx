@@ -1,7 +1,7 @@
 import { IKImage } from "imagekitio-react";
 
 interface ImageProps {
-  path: string;
+  path?: string;
   src?: any;
   alt: string;
   className?: string;
